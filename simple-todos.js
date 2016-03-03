@@ -47,6 +47,12 @@ Template.body.events({
   }
 });
 
+Template.task.helpers({
+  isOwner: function () {
+    return this.owner === Meteor.userId();
+  }
+});
+
 Template.task.events({
 
   "click .toggle-checked": function() {
@@ -55,6 +61,9 @@ Template.task.events({
   },
   "click .delete": function () {
     Meteor.call("deleteTask", this._id);
+  },
+  "click .toggle-private": function () {
+    Meteor.call("setPrivate", this._id, ! this.private);
   }
 });
 
@@ -82,5 +91,14 @@ Meteor.methods({
   },
   setChecked: function (taskId, setChecked) {
     Tasks.update(taskId, { $set: { checked: setChecked} });
+  },
+  setPrivate: function (taskId, setToPrivate) {
+    var task = Tasks.findOne(taskId);
+
+    //Make sure only the task owner can make a task private
+    if (task.owner !== Meteor.userId()) {
+      throw new Meteor.Error("not-authorized");
+    }
+    Task.update(taskId, { $set: {private: setToPrivate}});
   }
 });
