@@ -50,6 +50,7 @@ Template.body.events({
 Template.task.helpers({
   isOwner: function () {
     return this.owner === Meteor.userId();
+    debugger;
   }
 });
 
@@ -99,6 +100,6 @@ Meteor.methods({
     if (task.owner !== Meteor.userId()) {
       throw new Meteor.Error("not-authorized");
     }
-    Task.update(taskId, { $set: {private: setToPrivate}});
+    Tasks.update(taskId, { $set: {private: setToPrivate}});
   }
 });
